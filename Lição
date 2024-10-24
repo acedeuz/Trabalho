@@ -1,0 +1,75 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Definição da estrutura da célula
+struct reg {
+    int conteudo;
+    struct reg *prox;
+};
+typedef struct reg celula;
+
+// Função para imprimir todos os valores da lista
+void imprimeLista(celula *head) {
+    celula *atual = head;
+    while (atual != NULL) {
+        printf("%d -> ", atual->conteudo);
+        atual = atual->prox;
+    }
+    printf("NULL\n");
+}
+
+// Função para remover os elementos da lista e liberar memória
+void removeLista(celula **head) {
+    celula *atual = *head;
+    celula *proximo;
+
+    while (atual != NULL) {
+        proximo = atual->prox;
+        free(atual); // Liberando a memória
+        atual = proximo;
+    }
+    *head = NULL;
+}
+
+// Função para calcular o máximo de elementos possíveis com base na memória disponível
+int calculaMaximoElementos(size_t memoria_disponivel) {
+    return memoria_disponivel / sizeof(celula);
+}
+
+int main() {
+    // Criando três instâncias da célula
+    celula *primeira = (celula *)malloc(sizeof(celula));
+    celula *segunda = (celula *)malloc(sizeof(celula));
+    celula *terceira = (celula *)malloc(sizeof(celula));
+
+    // Inicializando valores
+    primeira->conteudo = 10;
+    primeira->prox = segunda;
+
+    segunda->conteudo = 20;
+    segunda->prox = terceira;
+
+    terceira->conteudo = 30;
+    terceira->prox = NULL;
+
+    // Imprimindo a lista
+    printf("Lista original:\n");
+    imprimeLista(primeira);
+
+    // Calculando o tamanho de cada célula
+    printf("Tamanho de uma célula: %zu bytes\n", sizeof(celula));
+
+    // Removendo todos os elementos da lista
+    removeLista(&primeira);
+
+    // Tentando imprimir a lista após remoção
+    printf("Lista após remoção:\n");
+    imprimeLista(primeira);
+
+    // Supondo que haja 4 GB de memória RAM livre
+    size_t memoria_disponivel = 4L * 1024 * 1024 * 1024; // 4 GB
+    int max_elementos = calculaMaximoElementos(memoria_disponivel);
+    printf("Máximo de elementos possíveis na lista: %d\n", max_elementos);
+
+    return 0;
+}
